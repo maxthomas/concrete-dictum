@@ -4,7 +4,6 @@
  */
 package io.maxthomas.dictum.concrete;
 
-import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -450,20 +449,7 @@ public class FromConcrete {
   private static final TaggedToken convert(edu.jhu.hlt.concrete.TaggedToken tt) {
     TaggedToken.Builder b = new TaggedToken.Builder();
     b.setIndex(tt.getTokenIndex());
-    if (tt.isSetTag()) {
-      if (tt.isSetConfidence()) {
-        Map.Entry<String, Confidence> best = new AbstractMap.SimpleImmutableEntry<>(tt.getTag(),
-            new Confidence.Builder()
-                .setScore(tt.getConfidence())
-                .build());
-        b.setBestTagConfidenceScore(best);
-      } else
-        LOGGER.warn("Tag is set but confidence is not. Not adding.");
-
-    } else if (tt.isSetConfidence())
-      LOGGER.warn("Confidence is set but tag is not. Not adding.");
-
-    b.putAllTagToConfidenceMap(convert(tt.getTagList(), tt.getConfidenceList()));
+    b.setTag(tt.getTag());
     return b.build();
   }
 }
