@@ -26,7 +26,6 @@ import edu.jhu.hlt.concrete.TokenRefSequence;
 import edu.jhu.hlt.concrete.TokenTagging;
 import io.maxthomas.dictum.Communication;
 import io.maxthomas.dictum.CommunicationTagging;
-import io.maxthomas.dictum.Confidence;
 import io.maxthomas.dictum.Constituent;
 import io.maxthomas.dictum.Dependency;
 import io.maxthomas.dictum.DependencyParse;
@@ -44,11 +43,16 @@ import io.maxthomas.dictum.TaggedToken;
 import io.maxthomas.dictum.TaggedTokenGroup;
 import io.maxthomas.dictum.Token;
 import io.maxthomas.dictum.Tokenization;
+import io.maxthomas.dictum.primitives.Confidence;
+import io.maxthomas.dictum.primitives.IntGreaterThanZero;
+import io.maxthomas.dictum.primitives.IntZeroOrGreater;
+import io.maxthomas.dictum.primitives.NonEmptyNonWhitespaceString;
+import io.maxthomas.dictum.primitives.UnixTimestamp;
 /**
  * Utility class that takes in Concrete {@link edu.jhu.hlt.concrete.Communication}
  * objects and converts them to Dictum {@link Communication} objects.
  */
-public class FromConcrete {
+public final class FromConcrete {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FromConcrete.class);
 
@@ -68,13 +72,15 @@ public class FromConcrete {
       b.setId(c.getId())
           .setUUID(UUID.fromString(c.getUuid().getUuidString()))
           .setType(c.getType())
-          .setText(c.getText())
-          .setNullableStartTime(c.getStartTime())
-          .setNullableEndTime(c.getEndTime());
+          .setText(c.getText());
+      if (c.isSetStartTime())
+        b.setStartTime(UnixTimestamp.create(c.getStartTime()));
+      if (c.isSetEndTime())
+        b.setEndTime(UnixTimestamp.create(c.getEndTime()));
       AnnotationMetadata amd = c.getMetadata();
-      b.setTool(amd.getTool())
-          .setKBest(amd.getKBest())
-          .setTimestamp(amd.getTimestamp());
+      b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+        .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+        .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
       if (c.isSetCommunicationTaggingList())
         c.getCommunicationTaggingList()
             .stream()
@@ -124,9 +130,9 @@ public class FromConcrete {
     InDocEntityGroup.Builder b = new InDocEntityGroup.Builder();
     b.setUUID(UUID.fromString(a.getUuid().getUuidString()));
     AnnotationMetadata amd = a.getMetadata();
-    b.setTool(amd.getTool())
-      .setKBest(amd.getKBest())
-      .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     for (Entity e : a.getEntityList()) {
       InDocEntity pe = convert(e);
       b.putIdToEntityMap(pe.getUUID(), pe);
@@ -154,9 +160,9 @@ public class FromConcrete {
     InDocEntityMentionGroup.Builder b = new InDocEntityMentionGroup.Builder();
     b.setUUID(convert(a.getUuid()));
     AnnotationMetadata amd = a.getMetadata();
-    b.setTool(amd.getTool())
-      .setKBest(amd.getKBest())
-      .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     for (EntityMention e : a.getMentionList()) {
       InDocEntityMention pem = convert(e, m);
       b.putIdToEntityMentionMap(pem.getUUID(), pem);
@@ -205,9 +211,9 @@ public class FromConcrete {
     CommunicationTagging.Builder b = new CommunicationTagging.Builder();
     b.setUUID(UUID.fromString(cct.getUuid().getUuidString()));
     AnnotationMetadata amd = cct.getMetadata();
-    b.setTool(amd.getTool())
-      .setKBest(amd.getKBest())
-      .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     b.setTaggingType(cct.getTaggingType());
     b.putAllTagToConfidenceMap(convert(cct.getTagList(), cct.getConfidenceList()));
     return b.build();
@@ -221,9 +227,9 @@ public class FromConcrete {
     LanguageID.Builder b = new LanguageID.Builder();
     b.setUUID(convert(lid.getUuid()));
     AnnotationMetadata amd = lid.getMetadata();
-    b.setTool(amd.getTool())
-       .setKBest(amd.getKBest())
-       .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     b.putAllLanguageToProbMap(lid.getLanguageToProbabilityMap());
     return b.build();
   }
@@ -270,15 +276,15 @@ public class FromConcrete {
     Tokenization.Builder b = new Tokenization.Builder();
     b.setUUID(convert(tkz.getUuid()));
     AnnotationMetadata amd = tkz.getMetadata();
-    b.setTool(amd.getTool())
-       .setKBest(amd.getKBest())
-       .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     b.setType(tkz.getKind().toString());
     if (tkz.isSetTokenList()) {
       List<edu.jhu.hlt.concrete.Token> tl = tkz.getTokenList().getTokenList();
       for (edu.jhu.hlt.concrete.Token t : tl) {
         Token pt = convert(t);
-        b.putIndexToTokenMap(pt.getIndex(), pt);
+        b.putIndexToTokenMap(pt.getIndex().getVal(), pt);
       }
     }
 
@@ -344,9 +350,9 @@ public class FromConcrete {
     DependencyParse.Builder b = new DependencyParse.Builder();
     b.setUUID(convert(p.getUuid()));
     AnnotationMetadata amd = p.getMetadata();
-    b.setTool(amd.getTool())
-       .setKBest(amd.getKBest())
-       .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     for (edu.jhu.hlt.concrete.Dependency d : p.getDependencyList())
       b.addDependencies(convert(d));
     return b.build();
@@ -367,9 +373,9 @@ public class FromConcrete {
     Parse.Builder b = new Parse.Builder();
     b.setUUID(convert(p.getUuid()));
     AnnotationMetadata amd = p.getMetadata();
-    b.setTool(amd.getTool())
-       .setKBest(amd.getKBest())
-       .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     for (edu.jhu.hlt.concrete.Constituent c : p.getConstituentList()) {
       Constituent pc = convert(c);
       b.putConstituents(pc.getId(), pc);
@@ -383,7 +389,8 @@ public class FromConcrete {
     b.setId(c.getId());
     b.setNullableTag(c.getTag());
     b.addAllChildList(c.getChildList());
-    b.setHeadChildIndex(c.getHeadChildIndex());
+    if (c.isSetHeadChildIndex())
+      b.setHeadChildIndex(c.getHeadChildIndex());
     if (c.isSetStart())
       b.setStart(c.getStart());
     if (c.isSetEnding())
@@ -393,7 +400,7 @@ public class FromConcrete {
 
   private static final Token convert (edu.jhu.hlt.concrete.Token tk) {
     Token.Builder b = new Token.Builder();
-    b.setIndex(tk.getTokenIndex());
+    b.setIndex(new IntZeroOrGreater.Builder().setVal(tk.getTokenIndex()).build());
     b.setTextSpan(convert(tk.getTextSpan()));
     b.setNullableTokenText(tk.getText());
     return b.build();
@@ -403,13 +410,13 @@ public class FromConcrete {
     TaggedTokenGroup.Builder b = new TaggedTokenGroup.Builder();
     b.setUUID(convert(tt.getUuid()));
     AnnotationMetadata amd = tt.getMetadata();
-    b.setTool(amd.getTool())
-       .setKBest(amd.getKBest())
-       .setTimestamp(amd.getTimestamp());
+    b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
+      .setKBest(IntGreaterThanZero.create(amd.getKBest()))
+      .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     b.setNullableTaggingType(tt.getTaggingType());
     for (edu.jhu.hlt.concrete.TaggedToken tok : tt.getTaggedTokenList()) {
       TaggedToken pt = convert(tok);
-      b.putIndexToTaggedTokenMap(pt.getIndex(), pt);
+      b.putIndexToTaggedTokenMap(pt.getIndex().getVal(), pt);
     }
 
     return b.build();
@@ -448,7 +455,7 @@ public class FromConcrete {
 
   private static final TaggedToken convert(edu.jhu.hlt.concrete.TaggedToken tt) {
     TaggedToken.Builder b = new TaggedToken.Builder();
-    b.setIndex(tt.getTokenIndex());
+    b.setIndex(new IntZeroOrGreater.Builder().setVal(tt.getTokenIndex()).build());
     b.setTag(tt.getTag());
     return b.build();
   }
