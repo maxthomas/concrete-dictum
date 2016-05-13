@@ -4,7 +4,7 @@
 
   <groupId>io.maxthomas</groupId>
   <artifactId>concrete-dictum</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
   <packaging>jar</packaging>
 
   <name>concrete-dictum</name>
@@ -89,13 +89,13 @@
     <dependency>
       <groupId>io.maxthomas</groupId>
       <artifactId>dictum</artifactId>
-      <version>0.3.0</version>
+      <version>0.4.0</version>
     </dependency>
 
     <dependency>
       <groupId>edu.jhu.hlt</groupId>
       <artifactId>concrete-util</artifactId>
-      <version>4.8.8</version>
+      <version>4.8.9</version>
       <scope>test</scope>
     </dependency>
     <dependency>

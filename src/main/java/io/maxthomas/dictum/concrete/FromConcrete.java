@@ -16,11 +16,13 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableMap;
 
 import edu.jhu.hlt.concrete.AnnotationMetadata;
+import edu.jhu.hlt.concrete.CommunicationMetadata;
 import edu.jhu.hlt.concrete.Entity;
 import edu.jhu.hlt.concrete.EntityMention;
 import edu.jhu.hlt.concrete.EntityMentionSet;
 import edu.jhu.hlt.concrete.EntitySet;
 import edu.jhu.hlt.concrete.LanguageIdentification;
+import edu.jhu.hlt.concrete.NITFInfo;
 import edu.jhu.hlt.concrete.TextSpan;
 import edu.jhu.hlt.concrete.TokenRefSequence;
 import edu.jhu.hlt.concrete.TokenTagging;
@@ -81,6 +83,13 @@ public final class FromConcrete {
       b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
         .setKBest(IntGreaterThanZero.create(amd.getKBest()))
         .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
+
+      if (c.isSetCommunicationMetadata()) {
+        CommunicationMetadata cmd = c.getCommunicationMetadata();
+        NITFInfo nitfi = cmd.getNitfInfo();
+        // TODO: NITFInfo -> dictum
+      }
+
       if (c.isSetCommunicationTaggingList())
         c.getCommunicationTaggingList()
             .stream()
@@ -230,7 +239,9 @@ public final class FromConcrete {
     b.setTool(NonEmptyNonWhitespaceString.create(amd.getTool()))
       .setKBest(IntGreaterThanZero.create(amd.getKBest()))
       .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
-    b.putAllLanguageToProbMap(lid.getLanguageToProbabilityMap());
+    for (Map.Entry<String, Double> e : lid.getLanguageToProbabilityMap().entrySet())
+      b.putLanguageToProbMap(e.getKey(), Confidence.fromDouble(e.getValue()));
+
     return b.build();
   }
 
