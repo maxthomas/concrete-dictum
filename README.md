@@ -9,16 +9,18 @@ Current
 <dependency>
   <groupId>io.maxthomas</groupId>
   <artifactId>concrete-dictum</artifactId>
-  <version>0.3.0</version>
+  <version>x.y.z</version>
 </dependency>
 ```
+
+Plug in the numbers from the above badge.
 
 Current [concrete-core](https://github.com/hltcoe/concrete-core) version:
 ``` xml
 <dependency>
   <groupId>edu.jhu.hlt</groupId>
   <artifactId>concrete-core</artifactId>
-  <version>4.8-hc-fix</version>
+  <version>4.9</version>
 </dependency>
 ```
 
