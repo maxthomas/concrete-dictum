@@ -20,7 +20,7 @@ Current [concrete-core](https://github.com/hltcoe/concrete-core) version:
 <dependency>
   <groupId>edu.jhu.hlt</groupId>
   <artifactId>concrete-core</artifactId>
-  <version>4.9</version>
+  <version>4.10-rework</version>
 </dependency>
 ```
 
