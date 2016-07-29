@@ -200,8 +200,14 @@ public final class FromConcrete {
     Map<Integer, Token> toks = tkz.getIndexToTokenMap();
     if (trs.isSetAnchorTokenIndex()) {
       int ai = trs.getAnchorTokenIndex();
-      b.setAnchorToken(toks.get(ai));
-      b.setAnchorTokenIndex(ai);
+      Optional<Token> oidx = Optional.ofNullable(toks.get(ai));
+      if (oidx.isPresent()) {
+        b.setAnchorToken(toks.get(ai));
+        b.setAnchorTokenIndex(ai);
+      } else
+        throw new IllegalStateException("Found listed anchor token index of: "
+            + ai
+            + ", which does not exist in the Tokenization.");
     }
 
     b.setTextSpan(convert(trs.getTextSpan()));
