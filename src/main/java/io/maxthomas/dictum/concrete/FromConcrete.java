@@ -204,7 +204,7 @@ public final class FromConcrete {
       if (oidx.isPresent()) {
         b.setAnchorToken(toks.get(ai));
         b.setAnchorTokenIndex(ai);
-      } else
+      } else if (ai != -1)
         throw new IllegalStateException("Found listed anchor token index of: "
             + ai
             + ", which does not exist in the Tokenization.");
