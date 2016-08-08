@@ -356,6 +356,8 @@ public final class FromConcrete {
     }
 
     b.setTokenization(tkz);
+    b.setLinkType(sl.getLinkType());
+    b.setTokenizationUUID(tkz.getUUID());
     return b.build();
   }
 
