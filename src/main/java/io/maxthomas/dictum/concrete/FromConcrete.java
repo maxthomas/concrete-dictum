@@ -240,7 +240,7 @@ public final class FromConcrete {
       .setKBest(IntGreaterThanZero.create(amd.getKBest()))
       .setTimestamp(UnixTimestamp.create(amd.getTimestamp()));
     for (Map.Entry<String, Double> e : lid.getLanguageToProbabilityMap().entrySet()) {
-      LOGGER.info("Adding following to map: {}", e.toString());
+      LOGGER.debug("Adding following to map: {}", e.toString());
       b.putLanguageToProbMap(e.getKey(), Confidence.fromDouble(e.getValue()));
     }
 
