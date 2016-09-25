@@ -232,7 +232,7 @@ public final class FromConcrete {
     return UUID.fromString(uuid.getUuidString());
   }
 
-  private static final LanguageID convert(LanguageIdentification lid) {
+  public static final LanguageID convert(LanguageIdentification lid) {
     LanguageID.Builder b = new LanguageID.Builder();
     b.setUUID(convert(lid.getUuid()));
     AnnotationMetadata amd = lid.getMetadata();
